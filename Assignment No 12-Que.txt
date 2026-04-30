@@ -1,0 +1,161 @@
+use assignment;
+
+#-----------------------------
+#PART A
+#-----------------------------
+
+#1. Display product name, quantity produced, production cost, and cost per unit (production_cost / quantity_produced). Alias as cost_per_unit.
+
+select product_name,quantity_produced,production_cost,(production_cost/quantity_produced) as cost_per_unit from production;
+
+#2. Show product name, production date, and extract the year from production date. Alias as production_year.
+
+select product_name,production_date,year(production_date) as "production_year" from production;
+
+
+# 3. Display product name and production cost along with 10% increased cost (production_cost + 10%). Alias as estimated_future_cost.
+
+select product_name,production_cost,(production_cost+ (10/100)*production_cost) as "estimated_future_cost" from production;
+
+
+# 4. Show product name, quantity produced, production cost, and total production value (quantity_produced × production_cost). Alias as production_value.
+
+select product_name,quantity_produced,production_cost,quantity_produced*production_cost as "production_value" from production;
+
+# 5. Display production_id, quantity produced, and remaining capacity assuming factory daily capacity is 250 units (250 - quant#ity_produced). Alias as remaining_capacity.
+
+select production_id,quantity_produced,(250-quantity_produced) as remaining_capacity from production;
+
+
+#-----------------------------
+#PART B
+#-----------------------------
+
+#6. Find the total quantity produced across all factories.
+
+select t0.factory_name,Sum(t1.quantity_produced) as "total quantity"
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+group by t0.factory_name;
+
+# Find the average production cost of all products.
+select product_name,avg(production_cost) as "Avg Cost"
+from production
+group by product_name;
+
+
+
+#8. Find the maximum and minimum quantity produced.
+select max(quantity_produced) as "Maximum Quantity Produced",
+       min(quantity_produced) as "Minimum Quantity Produced"
+from  production;      
+
+
+# 9. Count how many production records exist for Night shift.
+
+select count(*)
+from production
+where shift='Night';
+
+#10. Find the total number of distinct products manufactured.
+
+select count(distinct product_name) from production;
+
+
+#-----------------------------
+#PART C
+#-----------------------------
+
+#11. Find total quantity produced per product.
+
+select product_name,sum(quantity_produced) from production group by product_name;
+
+#12. Find total production cost per factory (show factory name).
+
+select t0.factory_name,Sum(t1.production_cost) as "total production cost per factory"
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+group by t0.factory_name;
+
+
+#13. Show average quantity produced per shift.
+
+select shift,avg(quantity_produced) as "average quantity produced per shift"
+from production
+group by shift;
+
+#14. Find number of production records per factory (display factory name and count).
+
+select t0.factory_name,count(production_id) as "records per factory"
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+group by t0.factory_name;
+
+
+# 15. For each product, calculate total quantity, average cost, and total cost.
+
+SELECT 
+    product_name,
+    SUM(quantity_produced) AS 'total quantity',
+    AVG(production_cost) AS 'average cost',
+    SUM(production_cost) AS ' total cost.'
+FROM
+    production
+group by product_name;
+
+#-----------------------------
+#PART D –
+#-----------------------------
+
+#16. List total quantity produced by each factory sorted in descending order.
+
+select t0.factory_name,sum(quantity_produced) as "total quantity produced"
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+group by t0.factory_name
+order by sum(quantity_produced) desc;
+
+# or 
+
+select t0.factory_name,sum(quantity_produced) as "total quantity produced"
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+group by t0.factory_name
+order by 2 desc;
+
+#17. Display factories with their total production cost sorted from highest to lowest.
+select t0.factory_name,sum(production_cost) as "total production cost"
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+group by t0.factory_name
+order by sum(production_cost) desc;
+
+# or 
+
+select t0.factory_name,sum(production_cost) as "total production cost"
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+group by t0.factory_name
+order by 2 desc;
+
+#18. Find top 3 products based on total quantity produced.
+
+select product_name,sum(quantity_produced) as "total quantity produced"
+from production
+group by product_name
+order by sum(quantity_produced) desc
+limit 3;
+
+
+
+# or 
+
+select product_name,sum(quantity_produced) as "total quantity produced"
+from production
+group by product_name
+order by 2 desc
+limit 3;
+
+
+#19. Show bottom 5 production records based on production cost using ORDER BY and LIMIT.
+
+select * from production order by production_cost limit 5;
+
+# 20. Display factory name, product name, and production cost for all records sorted by factory name and production cost.
+
+select t0.factory_name,product_name,production_cost
+from factory t0 inner join production t1 on t0.factory_id=t1.factory_id
+order by t0.factory_name,production_cost
